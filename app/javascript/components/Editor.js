@@ -5,6 +5,8 @@ import EventList from './EventList';
 import PropTypes from 'prop-types';
 import PropsRoute from './PropsRoute';
 import Event from './Event';
+import { Switch } from 'react-router-dom';
+import EventForm from './EventForm';
 
 class Editor extends React.Component {
   constructor(props) {
@@ -36,11 +38,14 @@ class Editor extends React.Component {
         <div>
           <Header />
           <div className="grid">
-            <EventList events={events} />
-            <PropsRoute path="/events/:id" component={Event} event={event} />
+            <EventList events={events} activeId={Number(eventId)} />
+            <Switch>
+              <PropsRoute path="/events/new" component={EventForm} />
+              <PropsRoute path="/events/:id" component={Event} event={event} />
+            </Switch>
           </div>
         </div>
-      );
+    );
   }
 }
 Editor.propTypes = {

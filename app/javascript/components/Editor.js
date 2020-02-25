@@ -33,12 +33,14 @@ class Editor extends React.Component {
     const event = events.find(e => e.id === Number(eventId));
 
     return (
-      <div>
-        <Header />
-        <EventList events={events} />
-        <PropsRoute path="/events/:id" component={Event} event={event} />
-      </div>
-    );
+        <div>
+          <Header />
+          <div className="grid">
+            <EventList events={events} />
+            <PropsRoute path="/events/:id" component={Event} event={event} />
+          </div>
+        </div>
+      );
   }
 }
 Editor.propTypes = {

@@ -1,12 +1,14 @@
 import React from 'react';
 import axios from 'axios';
+import { Switch } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import Event from './Event';
 import Header from './Header';
 import EventList from './EventList';
-import PropTypes from 'prop-types';
 import PropsRoute from './PropsRoute';
-import Event from './Event';
-import { Switch } from 'react-router-dom';
 import EventForm from './EventForm';
+import { success } from '../helpers/notifications';
+import { handleAjaxError } from '../helpers/helpers';
 
 class Editor extends React.Component {
   constructor(props) {
@@ -19,41 +21,19 @@ class Editor extends React.Component {
     this.deleteEvent = this.deleteEvent.bind(this);
   }
 
-  deleteEvent(eventId) {
-    const sure = window.confirm('Are you sure?');
-    if (sure) {
-      axios
-        .delete(`/api/events/${eventId}.json`)
-        .then((response) => {
-          if (response.status === 204) {
-            alert('Event deleted');
-            const { history } = this.props;
-            history.push('/events');
-
-            const { events } = this.state;
-            this.setState({ events: events.filter(event => event.id !== eventId) });
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    }
-}
 
   componentDidMount() {
     axios
       .get('/api/events.json')
       .then(response => this.setState({ events: response.data }))
-      .catch((error) => {
-        console.log(error);
-      });
+      .catch(handleAjaxError);
   }
 
   addEvent(newEvent) {
     axios
       .post('/api/events.json', newEvent)
       .then((response) => {
-        alert('Event Added!');
+        success('Event Added!');
         const savedEvent = response.data;
         this.setState(prevState => ({
           events: [...prevState.events, savedEvent],
@@ -61,9 +41,27 @@ class Editor extends React.Component {
         const { history } = this.props;
         history.push(`/events/${savedEvent.id}`);
       })
-      .catch((error) => {
-        console.log(error);
-      });
+      .catch(handleAjaxError);
+  }
+
+
+  deleteEvent(eventId) {
+    const sure = window.confirm('Are you sure?');
+    if (sure) {
+      axios
+        .delete(`/api/events/${eventId}.json`)
+        .then((response) => {
+          if (response.status === 204) {
+            success('Event deleted');
+            const { history } = this.props;
+            history.push('/events');
+
+            const { events } = this.state;
+            this.setState({ events: events.filter(event => event.id !== eventId) });
+          }
+        })
+        .catch(handleAjaxError);
+    }
   }
 
   render() {
